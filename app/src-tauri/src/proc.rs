@@ -54,3 +54,33 @@ pub fn which(name: &str) -> Option<std::path::PathBuf> {
         .map(|dir| dir.join(name))
         .find(|p| p.is_file())
 }
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+
+    fn alive(pid: i32) -> bool {
+        unsafe { libc::kill(pid, 0) == 0 }
+    }
+
+    #[tokio::test]
+    async fn kill_tree_stops_children() {
+        // A parent shell with a background grandchild, like yt-dlp + ffmpeg.
+        let mut child = command(Path::new("/bin/sh"))
+            .args(["-c", "sleep 60 & echo $!; wait"])
+            .stdout(std::process::Stdio::piped())
+            .spawn()
+            .unwrap();
+        let mut out = tokio::io::BufReader::new(child.stdout.take().unwrap());
+        let mut line = String::new();
+        tokio::io::AsyncBufReadExt::read_line(&mut out, &mut line).await.unwrap();
+        let grandchild: i32 = line.trim().parse().unwrap();
+        assert!(alive(grandchild));
+
+        kill_tree(child.id().unwrap()).await;
+        child.wait().await.unwrap();
+        // Reaped by init once the group is gone; give the OS a moment.
+        tokio::time::sleep(Duration::from_millis(200)).await;
+        assert!(!alive(grandchild), "grandchild survived kill_tree");
+    }
+}
