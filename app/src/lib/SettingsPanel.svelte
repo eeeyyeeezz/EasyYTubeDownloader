@@ -31,7 +31,7 @@
   let updateMessage = $state<string | null>(null);
   let systemProxy = $state<string | null>(null);
   // svelte-ignore state_referenced_locally
-  let proxy = $state(settings.proxy);
+  let proxy = $state(settings.proxy ?? "");
   const proxyInvalid = $derived(proxy.trim() !== "" && !isValidProxy(proxy));
 
   // Detected browsers, plus the saved one even if it's no longer found.
