@@ -1,6 +1,6 @@
 {
   "name": "easyytubedownloader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple YouTube downloader (yt-dlp GUI)",
   "type": "module",
   "scripts": {

@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "short_name": "EasyYTD",
   "description": "__MSG_extDescription__",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "default_locale": "en",
   "homepage_url": "https://github.com/eeeyyeeezz/EasyYTubeDownloader",
   "icons": {
@@ -20,12 +20,21 @@
       "32": "icons/32.png"
     }
   },
-  "permissions": ["contextMenus", "activeTab"],
+  "permissions": [
+    "contextMenus",
+    "activeTab"
+  ],
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/*"],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
       "run_at": "document_idle"
     }
   ]
