@@ -41,17 +41,22 @@
   "showLog": "Details",
   "hideLog": "Hide details",
   "errors": {
-    "age": "This video is age-restricted. In Settings, turn on \"Use cookies from browser\" with a signed-in browser.",
-    "bot": "YouTube asked to confirm you're not a bot. In Settings, turn on \"Use cookies from browser\", or try again later.",
+    "age": "This video is age-restricted. Pick a browser where you're signed in to YouTube.",
+    "bot": "YouTube is blocking requests from your IP address and asks to sign in. Pick a browser where you're signed in to YouTube and the app will use its cookies. A VPN also helps.",
     "private": "This video is private.",
-    "members": "This video is for channel members only.",
+    "members": "This video is for channel members. Pick a browser where you're signed in with a member account.",
     "unsupported": "This link isn't supported.",
     "unavailable": "This video is unavailable.",
     "disk": "Not enough disk space.",
     "network": "Network problem. Check your connection and try again.",
     "engine": "The download engine couldn't start. Try reinstalling it in Settings.",
     "invalid-url": "That doesn't look like a link.",
-    "unknown": "Something went wrong. Updating the engine in Settings often fixes it."
+    "unknown": "Something went wrong. Updating the engine in Settings often fixes it.",
+    "botWithCookies": "YouTube still asks to sign in, even with cookies from {browser}. Make sure you're signed in to YouTube there, or turn on a VPN or set a proxy in Settings.",
+    "cookies-locked": "{browser} keeps its cookies locked while it's running. Quit {browser} completely and retry, or pick another browser.",
+    "cookies-decrypt": "On Windows, {browser} encrypts cookies so they can't be read. Pick Firefox instead.",
+    "cookies-permission": "No access to Safari cookies. Allow \"Full Disk Access\" for the app in System Settings → Privacy & Security, or pick another browser.",
+    "cookies-missing": "No cookies found in {browser}. Pick another browser."
   },
   "settings": {
     "title": "Settings",
@@ -72,7 +77,12 @@
     "about": "Open source on GitHub",
     "cookies": "Use cookies from browser",
     "cookiesOff": "Off",
-    "cookiesHint": "Turn on if YouTube asks to sign in or confirm you're not a bot. Pick a browser where you're signed in to YouTube. Cookies stay on your computer."
+    "cookiesHint": "Used when YouTube asks to sign in or confirm you're not a bot. Pick a browser where you're signed in to YouTube. Cookies never leave your computer.",
+    "proxy": "Proxy",
+    "proxySystem": "Using the system proxy {proxy}. Enter another address to override it.",
+    "proxyNone": "No system proxy found. If YouTube only opens through a VPN or proxy app, enter its address, e.g. socks5://127.0.0.1:1080.",
+    "proxyCustom": "Downloads go through this proxy.",
+    "proxyInvalid": "Use a full address like http://host:port or socks5://host:port."
   },
   "firstRun": {
     "title": "Setting things up",
@@ -91,5 +101,8 @@
       "extract": "Unpacking",
       "done": "Ready"
     }
-  }
+  },
+  "retryWithCookies": "Retry signed in",
+  "cookiesFrom": "Browser to take cookies from",
+  "noBrowsers": "No supported browser found. Sign in to YouTube in Chrome or Firefox, or turn on a VPN."
 }

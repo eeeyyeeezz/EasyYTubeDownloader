@@ -24,6 +24,7 @@ export interface Settings {
   maxParallel: number;
   playlist: boolean;
   cookiesBrowser: string;
+  proxy: string;
   lastEngineUpdate: number;
 }
 
@@ -65,6 +66,8 @@ export interface JobUpdate {
 }
 
 export interface Job extends JobUpdate {
+  /** Browser whose cookies the job used, "" if none. */
+  cookies: string;
   url: string;
   preset: Preset;
   dir: string;
@@ -87,7 +90,24 @@ export const api = {
     invoke<number>("start_download", { request }),
   cancelDownload: (id: number) => invoke<void>("cancel_download", { id }),
   takePendingLinks: () => invoke<LinkRequest[]>("take_pending_links"),
+  detectBrowsers: () => invoke<string[]>("detect_browsers"),
+  systemProxy: () => invoke<string | null>("system_proxy"),
 };
+
+/** Errors that signing in through browser cookies can fix. */
+export const COOKIE_ERRORS = [
+  "bot",
+  "age",
+  "members",
+  "cookies-locked",
+  "cookies-decrypt",
+  "cookies-permission",
+  "cookies-missing",
+];
+
+export function isValidProxy(text: string): boolean {
+  return /^(https?|socks4a?|socks5h?):\/\/[^\s/]+/i.test(text.trim());
+}
 
 const YT = /^https?:\/\/((www|m|music)\.)?(youtube\.com|youtu\.be)\//i;
 

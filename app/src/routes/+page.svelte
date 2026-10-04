@@ -27,6 +27,7 @@
   let url = $state("");
   let formError = $state<string | null>(null);
   let showSettings = $state(false);
+  let browsers = $state<string[]>([]);
 
   // Links from the extension that arrived before the engine was ready.
   let waiting: LinkRequest[] = [];
@@ -45,9 +46,10 @@
   async function start(target: string, p: Preset = preset, playlist = settings?.playlist ?? false) {
     if (!settings) return;
     const request = { url: target.trim(), preset: p, dir: settings.downloadDir, playlist };
+    const cookies = settings.cookiesBrowser;
     try {
       const id = await api.startDownload(request);
-      jobs.unshift({ id, status: "queued", ...request, ...early.get(id) });
+      jobs.unshift({ id, status: "queued", cookies, ...request, ...early.get(id) });
       early.delete(id);
       return true;
     } catch (e) {
@@ -103,6 +105,12 @@
     start(job.url, job.preset, job.playlist);
   }
 
+  async function retryWithCookies(job: Job, browser: string) {
+    if (!settings) return;
+    await saveSettings({ ...settings, cookiesBrowser: browser });
+    retry(job);
+  }
+
   function remove(job: Job) {
     jobs = jobs.filter((j) => j.id !== job.id);
   }
@@ -133,6 +141,7 @@
     (async () => {
       settings = await api.getSettings();
       setLanguage(settings.language);
+      browsers = await api.detectBrowsers().catch(() => []);
       const status = await api.engineStatus();
       engine = { ready: status.ready, missing: status.missing, force: false };
       await takeLinks();
@@ -224,6 +233,8 @@
             {#each jobs as job (job.id)}
               <JobItem
                 {job}
+                {browsers}
+                onusecookies={(browser) => retryWithCookies(job, browser)}
                 oncancel={() => api.cancelDownload(job.id)}
                 onretry={() => retry(job)}
                 onremove={() => remove(job)}
@@ -238,6 +249,7 @@
     {#if showSettings}
       <SettingsPanel
         {settings}
+        {browsers}
         onchange={saveSettings}
         onclose={() => (showSettings = false)}
         onreinstall={reinstall}

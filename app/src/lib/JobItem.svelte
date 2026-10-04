@@ -1,15 +1,19 @@
 <script lang="ts">
-  import { formatBytes, formatEta, type Job } from "./api";
+  import { COOKIE_BROWSERS, COOKIE_ERRORS, formatBytes, formatEta, type Job } from "./api";
   import { t } from "./i18n.svelte";
 
   let {
     job,
+    browsers,
+    onusecookies,
     oncancel,
     onretry,
     onremove,
     onreveal,
   }: {
     job: Job;
+    browsers: string[];
+    onusecookies: (browser: string) => void;
     oncancel: () => void;
     onretry: () => void;
     onremove: () => void;
@@ -17,6 +21,23 @@
   } = $props();
 
   let showLog = $state(false);
+
+  const browserName = (id: string) => COOKIE_BROWSERS[id] ?? id;
+  const needsCookies = $derived(job.status === "error" && COOKIE_ERRORS.includes(job.error ?? ""));
+  // Suggest a different browser when the one we used is the problem.
+  const failedBrowser = $derived(job.error?.startsWith("cookies-") || job.error === "bot" ? job.cookies : "");
+  let chosen = $state("");
+  $effect(() => {
+    if (!chosen || !browsers.includes(chosen)) {
+      chosen = browsers.find((b) => b !== failedBrowser) ?? browsers[0] ?? "";
+    }
+  });
+
+  const errorText = $derived.by(() => {
+    const code = job.error ?? "unknown";
+    if (code === "bot" && job.cookies) return t("errors.botWithCookies", { browser: browserName(job.cookies) });
+    return t(`errors.${code}`, { browser: browserName(job.cookies) });
+  });
 
   const active = $derived(["queued", "starting", "downloading", "processing"].includes(job.status));
   const indeterminate = $derived(
@@ -56,7 +77,21 @@
     </div>
 
     {#if job.status === "error"}
-      <p class="error">{t(`errors.${job.error ?? "unknown"}`)}</p>
+      <p class="error">{errorText}</p>
+      {#if needsCookies}
+        <div class="fix">
+          {#if browsers.length}
+            <select bind:value={chosen} aria-label={t("cookiesFrom")}>
+              {#each browsers as b (b)}
+                <option value={b}>{browserName(b)}</option>
+              {/each}
+            </select>
+            <button class="btn primary" onclick={() => onusecookies(chosen)}>{t("retryWithCookies")}</button>
+          {:else}
+            <p class="hint">{t("noBrowsers")}</p>
+          {/if}
+        </div>
+      {/if}
     {/if}
 
     {#if active}
@@ -160,6 +195,28 @@
   p.error {
     font-size: 13px;
     margin: 6px 0 0;
+  }
+
+  .fix {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .fix select {
+    padding: 5px 8px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    font-size: 13px;
+  }
+
+  .fix .hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
   }
 
   .bar {

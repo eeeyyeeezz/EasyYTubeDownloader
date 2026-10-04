@@ -1,16 +1,26 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { openUrl } from "@tauri-apps/plugin-opener";
-  import { api, COOKIE_BROWSERS, EXTENSION_URL, PRESETS, REPO_URL, type Settings } from "./api";
+  import {
+    api,
+    COOKIE_BROWSERS,
+    EXTENSION_URL,
+    isValidProxy,
+    PRESETS,
+    REPO_URL,
+    type Settings,
+  } from "./api";
   import { t } from "./i18n.svelte";
 
   let {
     settings,
+    browsers,
     onchange,
     onclose,
     onreinstall,
   }: {
     settings: Settings;
+    browsers: string[];
     onchange: (s: Settings) => void;
     onclose: () => void;
     onreinstall: () => void;
@@ -19,10 +29,24 @@
   let version = $state<string | null>(null);
   let updating = $state(false);
   let updateMessage = $state<string | null>(null);
+  let systemProxy = $state<string | null>(null);
+  // svelte-ignore state_referenced_locally
+  let proxy = $state(settings.proxy);
+  const proxyInvalid = $derived(proxy.trim() !== "" && !isValidProxy(proxy));
+
+  // Detected browsers, plus the saved one even if it's no longer found.
+  const browserOptions = $derived(
+    [...new Set([...browsers, settings.cookiesBrowser].filter(Boolean))],
+  );
 
   onMount(async () => {
     version = await api.engineVersion().catch(() => null);
+    systemProxy = await api.systemProxy().catch(() => null);
   });
+
+  function saveProxy() {
+    if (!proxyInvalid && proxy.trim() !== settings.proxy) set("proxy", proxy.trim());
+  }
 
   async function update() {
     updating = true;
@@ -99,11 +123,34 @@
     <span>{t("settings.cookies")}</span>
     <select value={settings.cookiesBrowser} onchange={(e) => set("cookiesBrowser", e.currentTarget.value)}>
       <option value="">{t("settings.cookiesOff")}</option>
-      {#each Object.entries(COOKIE_BROWSERS) as [id, name] (id)}
-        <option value={id}>{name}</option>
+      {#each browserOptions as id (id)}
+        <option value={id}>{COOKIE_BROWSERS[id] ?? id}</option>
       {/each}
     </select>
     <small class="hint">{t("settings.cookiesHint")}</small>
+  </label>
+
+  <label class="field">
+    <span>{t("settings.proxy")}</span>
+    <input
+      type="text"
+      bind:value={proxy}
+      onblur={saveProxy}
+      onkeydown={(e) => e.key === "Enter" && saveProxy()}
+      placeholder={systemProxy ?? "socks5://127.0.0.1:1080"}
+      spellcheck="false"
+      autocomplete="off"
+      class:invalid={proxyInvalid}
+    />
+    <small class="hint">
+      {#if proxyInvalid}
+        <span class="bad">{t("settings.proxyInvalid")}</span>
+      {:else if !proxy.trim()}
+        {systemProxy ? t("settings.proxySystem", { proxy: systemProxy }) : t("settings.proxyNone")}
+      {:else}
+        {t("settings.proxyCustom")}
+      {/if}
+    </small>
   </label>
 
   <section>
@@ -177,6 +224,24 @@
     gap: 6px;
     font-size: 13px;
     font-weight: 500;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  input.invalid {
+    border-color: var(--accent);
+  }
+
+  .bad {
+    color: var(--accent);
   }
 
   select {
