@@ -12,6 +12,9 @@
 
 [English](README.md) · **Русский**
 
+<br/>
+<img src="docs/screenshot-ru.png" width="480" alt="Главное окно EasyYTubeDownloader" />
+
 </div>
 
 ---
