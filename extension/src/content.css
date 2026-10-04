@@ -1,0 +1,47 @@
+.eytd-wrap {
+  display: inline-flex;
+  gap: 8px;
+  margin-right: 8px;
+  align-items: center;
+}
+
+.eytd-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 18px;
+  font: 500 14px/36px "Roboto", "Arial", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--yt-spec-badge-chip-background, rgba(0, 0, 0, 0.05));
+  color: var(--yt-spec-text-primary, #0f0f0f);
+}
+
+.eytd-btn:hover {
+  background: var(--yt-spec-10-percent-layer, rgba(0, 0, 0, 0.1));
+}
+
+.eytd-main {
+  background: #d93a2b;
+  color: #fff;
+}
+
+.eytd-main:hover {
+  background: #c03224;
+}
+
+.eytd-floating {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2147483000;
+  padding: 6px;
+  border-radius: 24px;
+  background: rgba(15, 15, 15, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.eytd-floating .eytd-mp3 {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}

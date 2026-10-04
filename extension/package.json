@@ -1,0 +1,15 @@
+{
+  "name": "easyytubedownloader-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.mjs",
+    "lint": "npm run build && web-ext lint -s dist/firefox",
+    "package": "npm run build && web-ext build -s dist/chrome -a artifacts -n EasyYTubeDownloader-chrome-{version}.zip -o && web-ext build -s dist/firefox -a artifacts -n EasyYTubeDownloader-firefox-{version}.zip -o"
+  },
+  "devDependencies": {
+    "web-ext": "^8"
+  }
+}

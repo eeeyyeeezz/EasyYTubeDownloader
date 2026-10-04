@@ -1,0 +1,16 @@
+{
+  "extName": { "message": "EasyYTubeDownloader" },
+  "extDescription": { "message": "Download YouTube videos and audio in one click with the EasyYTubeDownloader app." },
+  "download": { "message": "Download" },
+  "downloadMp3": { "message": "MP3" },
+  "downloadTitle": { "message": "Download with EasyYTubeDownloader" },
+  "mp3Title": { "message": "Download audio as MP3" },
+  "menuVideo": { "message": "Download video" },
+  "menuMp3": { "message": "Download as MP3" },
+  "popupBest": { "message": "Video, best quality" },
+  "popup1080": { "message": "Video, 1080p" },
+  "popupMp3": { "message": "Audio, MP3" },
+  "popupNotYouTube": { "message": "Open a YouTube video, then click here." },
+  "popupSent": { "message": "Sent to the app ✓" },
+  "popupNoApp": { "message": "Nothing happened? Install the app" }
+}

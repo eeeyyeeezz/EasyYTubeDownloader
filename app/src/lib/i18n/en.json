@@ -1,0 +1,95 @@
+{
+  "tagline": "Paste a link. Get the file.",
+  "urlPlaceholder": "https://www.youtube.com/watch?v=…",
+  "paste": "Paste",
+  "download": "Download",
+  "presets": {
+    "best": "Best",
+    "1080": "1080p",
+    "720": "720p",
+    "mp3": "MP3",
+    "m4a": "M4A"
+  },
+  "presetHints": {
+    "best": "Highest quality, up to 4K/8K (VP9/AV1)",
+    "1080": "Full HD, H.264, plays everywhere",
+    "720": "HD, H.264, smaller files",
+    "mp3": "Audio only, MP3 with cover art",
+    "m4a": "Audio only, AAC, no re-encoding"
+  },
+  "saveTo": "Save to",
+  "change": "Change",
+  "playlist": "Download the whole playlist",
+  "queue": "Downloads",
+  "queueEmpty": "Nothing here yet. Paste a YouTube link above, or use the browser extension.",
+  "clearFinished": "Clear finished",
+  "status": {
+    "queued": "Waiting…",
+    "starting": "Starting…",
+    "downloading": "Downloading",
+    "processing": "Converting…",
+    "done": "Done",
+    "error": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "item": "{n} of {total}",
+  "left": "{time} left",
+  "cancel": "Cancel",
+  "showInFolder": "Show in folder",
+  "retry": "Retry",
+  "remove": "Remove",
+  "showLog": "Details",
+  "hideLog": "Hide details",
+  "errors": {
+    "age": "This video is age-restricted. In Settings, turn on \"Use cookies from browser\" with a signed-in browser.",
+    "bot": "YouTube asked to confirm you're not a bot. In Settings, turn on \"Use cookies from browser\", or try again later.",
+    "private": "This video is private.",
+    "members": "This video is for channel members only.",
+    "unsupported": "This link isn't supported.",
+    "unavailable": "This video is unavailable.",
+    "disk": "Not enough disk space.",
+    "network": "Network problem. Check your connection and try again.",
+    "engine": "The download engine couldn't start. Try reinstalling it in Settings.",
+    "invalid-url": "That doesn't look like a link.",
+    "unknown": "Something went wrong. Updating the engine in Settings often fixes it."
+  },
+  "settings": {
+    "title": "Settings",
+    "close": "Done",
+    "language": "Language",
+    "auto": "System",
+    "defaultPreset": "Default format",
+    "parallel": "Simultaneous downloads",
+    "engine": "Download engine",
+    "engineHint": "yt-dlp updates itself daily. If downloads start failing, update it manually.",
+    "update": "Update now",
+    "updating": "Updating…",
+    "reinstall": "Reinstall",
+    "version": "yt-dlp {v}",
+    "extension": "Browser extension",
+    "extensionHint": "Adds a Download button right on YouTube.",
+    "getExtension": "Get the extension",
+    "about": "Open source on GitHub",
+    "cookies": "Use cookies from browser",
+    "cookiesOff": "Off",
+    "cookiesHint": "Turn on if YouTube asks to sign in or confirm you're not a bot. Pick a browser where you're signed in to YouTube. Cookies stay on your computer."
+  },
+  "firstRun": {
+    "title": "Setting things up",
+    "text": "Downloading the tools that do the heavy lifting. This happens once and takes about a minute.",
+    "retry": "Try again",
+    "failed": "Couldn't download the tools. Check your internet connection.",
+    "components": {
+      "yt-dlp": "yt-dlp, the downloader",
+      "ffmpeg": "ffmpeg, video and audio processing",
+      "deno": "Deno, needed for YouTube"
+    },
+    "phase": {
+      "wait": "Waiting",
+      "download": "Downloading",
+      "verify": "Verifying",
+      "extract": "Unpacking",
+      "done": "Ready"
+    }
+  }
+}

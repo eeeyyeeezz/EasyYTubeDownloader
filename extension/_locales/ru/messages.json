@@ -1,0 +1,16 @@
+{
+  "extName": { "message": "EasyYTubeDownloader" },
+  "extDescription": { "message": "Скачивайте видео и звук с YouTube в один клик через приложение EasyYTubeDownloader." },
+  "download": { "message": "Скачать" },
+  "downloadMp3": { "message": "MP3" },
+  "downloadTitle": { "message": "Скачать через EasyYTubeDownloader" },
+  "mp3Title": { "message": "Скачать звук в MP3" },
+  "menuVideo": { "message": "Скачать видео" },
+  "menuMp3": { "message": "Скачать в MP3" },
+  "popupBest": { "message": "Видео, лучшее качество" },
+  "popup1080": { "message": "Видео, 1080p" },
+  "popupMp3": { "message": "Звук, MP3" },
+  "popupNotYouTube": { "message": "Откройте видео на YouTube и нажмите сюда снова." },
+  "popupSent": { "message": "Отправлено в приложение ✓" },
+  "popupNoApp": { "message": "Ничего не произошло? Установите приложение" }
+}
