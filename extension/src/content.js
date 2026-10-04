@@ -88,9 +88,10 @@
   document.addEventListener("yt-navigate-finish", schedule);
   schedule();
 
-  chrome.runtime.onMessage.addListener((message) => {
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type === "eytd-launch") {
       launch(videoUrl(message.url) ?? videoUrl(), message.preset);
+      sendResponse({ ok: true });
     }
   });
 })();

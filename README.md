@@ -23,7 +23,7 @@
 - **Browser extension** for Chrome, Edge, Brave and Firefox adds a **⬇ Download** button under every YouTube video.
 - **Playlists**, a download queue, progress, speed and time left.
 - **Stays working**: the download engine ([yt-dlp](https://github.com/yt-dlp/yt-dlp)) updates itself daily, so YouTube changes don't break the app.
-- **Small and private**: the installer is about 3–10 MB, there is no tracking, and nothing is sent anywhere except to YouTube.
+- **Small and private**: the installer is about 3–10 MB and there is no tracking. The app only talks to YouTube, and to GitHub to download and update its tools.
 - English and Russian interface, light and dark theme.
 
 ## Download
@@ -91,7 +91,7 @@ The extension adds **⬇ Download** and **♪ MP3** buttons under YouTube videos
 
 The Chrome Web Store doesn't allow YouTube downloaders, so the extension is installed manually:
 
-1. Download `EasyYTubeDownloader-chrome-x.y.z.zip` from [Releases](https://github.com/eeeyyeeezz/EasyYTubeDownloader/releases/latest) and **unzip it** into a folder you'll keep, for example `Documents/EasyYTD-extension`.
+1. Download `easyytubedownloader-chrome-x.y.z.zip` from [Releases](https://github.com/eeeyyeeezz/EasyYTubeDownloader/releases/latest) and **unzip it** into a folder you'll keep, for example `Documents/EasyYTD-extension`.
 2. Open `chrome://extensions` (Edge: `edge://extensions`).
 3. Turn on **Developer mode** (top-right corner).
 4. Click **Load unpacked** and select the unzipped folder.
@@ -101,8 +101,8 @@ The Chrome Web Store doesn't allow YouTube downloaders, so the extension is inst
 <details open>
 <summary><b>Firefox</b></summary>
 
-- **Recommended:** install from Firefox Add-ons (the listing is in review; the link will appear here).
-- **For now, or for testing:** download `EasyYTubeDownloader-firefox-x.y.z.zip`, open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…** and pick the zip. Firefox removes temporary add-ons when it restarts.
+- The add-on isn't published on Firefox Add-ons (AMO) yet. Once it is, the link will be here.
+- **Until then:** download `easyytubedownloader-firefox-x.y.z.zip`, open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…** and pick the zip. Firefox removes temporary add-ons when it restarts.
 </details>
 
 The first time you click **Download**, the browser asks *"Open EasyYTubeDownloader?"*. Tick **Always allow** and click **Open**.

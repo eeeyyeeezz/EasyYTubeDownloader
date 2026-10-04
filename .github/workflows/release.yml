@@ -83,6 +83,10 @@ jobs:
   extension:
     needs: create-release
     runs-on: ubuntu-latest
+    # Job-level so the `if:` of the AMO step can see whether the secrets exist.
+    env:
+      AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+      AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -99,12 +103,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload "${{ github.ref_name }}" extension/artifacts/*.zip --clobber
-      # Optional: submit the new version to addons.mozilla.org.
-      # Add AMO_JWT_ISSUER and AMO_JWT_SECRET repository secrets to enable it.
+      # Optional: submit the new version to addons.mozilla.org. The very first
+      # submission has to be made by hand on AMO; after that, add the
+      # AMO_JWT_ISSUER and AMO_JWT_SECRET repository secrets to enable this.
       - name: Submit to Firefox Add-ons
         if: ${{ env.AMO_JWT_ISSUER != '' }}
         working-directory: extension
-        env:
-          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
-          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
         run: npx web-ext sign -s dist/firefox --channel listed --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"

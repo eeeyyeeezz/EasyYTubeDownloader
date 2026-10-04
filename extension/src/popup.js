@@ -19,8 +19,13 @@ chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
   actions.addEventListener("click", (e) => {
     const preset = e.target.closest("button")?.dataset.preset;
     if (!preset) return;
-    chrome.tabs.sendMessage(tab.id, { type: "eytd-launch", url: tab.url, preset });
-    status.textContent = msg("popupSent");
-    setTimeout(() => window.close(), 1500);
+    chrome.tabs
+      .sendMessage(tab.id, { type: "eytd-launch", url: tab.url, preset })
+      .then(() => {
+        status.textContent = msg("popupSent");
+        setTimeout(() => window.close(), 1500);
+      })
+      // Tabs opened before the extension was installed have no content script yet.
+      .catch(() => (status.textContent = msg("popupReload")));
   });
 });
