@@ -21,15 +21,25 @@ pub fn detect_browsers() -> Vec<&'static str> {
 
 #[cfg(target_os = "macos")]
 fn candidates() -> Vec<(&'static str, Vec<PathBuf>)> {
-    let support = env_path("HOME").join("Library/Application Support");
+    let home = env_path("HOME");
+    let support = home.join("Library/Application Support");
+    // Profiles outlive uninstalled browsers on macOS, so also require the app.
+    let installed = |app: &str| {
+        [PathBuf::from("/Applications"), home.join("Applications")]
+            .iter()
+            .any(|dir| dir.join(format!("{app}.app")).exists())
+    };
+    let browser = |id: &'static str, app: &str, profile: PathBuf| {
+        (id, if installed(app) { vec![profile] } else { vec![] })
+    };
     vec![
-        ("chrome", vec![support.join("Google/Chrome")]),
-        ("firefox", vec![support.join("Firefox/Profiles")]),
-        ("edge", vec![support.join("Microsoft Edge")]),
-        ("brave", vec![support.join("BraveSoftware/Brave-Browser")]),
-        ("opera", vec![support.join("com.operasoftware.Opera")]),
-        ("vivaldi", vec![support.join("Vivaldi")]),
-        ("chromium", vec![support.join("Chromium")]),
+        browser("chrome", "Google Chrome", support.join("Google/Chrome")),
+        browser("firefox", "Firefox", support.join("Firefox/Profiles")),
+        browser("edge", "Microsoft Edge", support.join("Microsoft Edge")),
+        browser("brave", "Brave Browser", support.join("BraveSoftware/Brave-Browser")),
+        browser("opera", "Opera", support.join("com.operasoftware.Opera")),
+        browser("vivaldi", "Vivaldi", support.join("Vivaldi")),
+        browser("chromium", "Chromium", support.join("Chromium")),
         // Last: reading Safari cookies needs Full Disk Access.
         ("safari", vec![PathBuf::from("/Applications/Safari.app")]),
     ]
@@ -182,6 +192,17 @@ mod tests {
         );
         assert_eq!(parse_windows_proxy("socks=3.3.3.3:1080").as_deref(), Some("socks5://3.3.3.3:1080"));
         assert_eq!(parse_windows_proxy(""), None);
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn browsers_need_an_installed_app() {
+        // Safari ships with macOS; every listed browser must have its app.
+        let found = detect_browsers();
+        assert!(found.contains(&"safari"));
+        for id in found {
+            assert!(candidates().iter().any(|(c, paths)| *c == id && !paths.is_empty()));
+        }
     }
 
     #[test]
