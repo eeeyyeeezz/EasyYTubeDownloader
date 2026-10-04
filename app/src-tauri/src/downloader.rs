@@ -121,7 +121,13 @@ impl Downloader {
 
         let app = app.clone();
         let slots = self.slots.clone();
-        let cookies = app.state::<SettingsStore>().get().cookies_browser;
+        let settings = app.state::<SettingsStore>().get();
+        let cookies = settings.cookies_browser;
+        let proxy = if settings.proxy.is_empty() {
+            crate::system::system_proxy()
+        } else {
+            Some(settings.proxy)
+        };
         let job = Job {
             id,
             url: url.to_string(),
@@ -129,6 +135,7 @@ impl Downloader {
             dir,
             playlist: req.playlist,
             cookies_browser: (!cookies.is_empty()).then_some(cookies),
+            proxy,
         };
         tauri::async_runtime::spawn(async move {
             let mut cancel_rx = cancel_rx;
@@ -160,6 +167,7 @@ struct Job {
     dir: PathBuf,
     playlist: bool,
     cookies_browser: Option<String>,
+    proxy: Option<String>,
 }
 
 enum Line {
@@ -197,6 +205,9 @@ impl Job {
         ]);
         if let Some(loc) = engine.ffmpeg_location() {
             a.extend(["--ffmpeg-location".into(), loc.to_string_lossy().into_owned()]);
+        }
+        if let Some(proxy) = &self.proxy {
+            a.extend(["--proxy".into(), proxy.clone()]);
         }
         if let Some(browser) = &self.cookies_browser {
             a.extend(["--cookies-from-browser".into(), browser.clone()]);
@@ -382,7 +393,16 @@ fn parse_progress(id: u64, p: &str) -> JobUpdate {
 /// Maps a yt-dlp error message to a code the UI can translate.
 fn classify(err: &str) -> &'static str {
     let e = err.to_lowercase();
-    if e.contains("confirm your age") || e.contains("age-restricted") || e.contains("age restricted") {
+    // Problems reading browser cookies come first: they explain any later failure.
+    if e.contains("could not copy") && e.contains("cookie database") {
+        "cookies-locked"
+    } else if e.contains("failed to decrypt with dpapi") || e.contains("app-bound encryption") {
+        "cookies-decrypt"
+    } else if e.contains("operation not permitted") && e.contains("cookies") {
+        "cookies-permission"
+    } else if e.contains("could not find") && e.contains("cookies database") {
+        "cookies-missing"
+    } else if e.contains("confirm your age") || e.contains("age-restricted") || e.contains("age restricted") {
         "age"
     } else if e.contains("not a bot") {
         "bot"
@@ -462,6 +482,16 @@ mod tests {
         assert_eq!(classify("ERROR: [youtube] x: Sign in to confirm you’re not a bot"), "bot");
         assert_eq!(classify("ERROR: [youtube] x: Video unavailable"), "unavailable");
         assert_eq!(classify("ERROR: something odd"), "unknown");
+        assert_eq!(
+            classify("ERROR: Could not copy Chrome cookie database. See https://github.com/yt-dlp/yt-dlp/issues/7271"),
+            "cookies-locked"
+        );
+        assert_eq!(classify("ERROR: Failed to decrypt with DPAPI. See https://x"), "cookies-decrypt");
+        assert_eq!(
+            classify("ERROR: [Errno 1] Operation not permitted: '/Users/a/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies'"),
+            "cookies-permission"
+        );
+        assert_eq!(classify("ERROR: could not find firefox cookies database in /x"), "cookies-missing");
     }
 
     #[test]

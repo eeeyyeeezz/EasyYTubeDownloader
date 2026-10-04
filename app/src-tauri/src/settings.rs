@@ -18,6 +18,8 @@ pub struct Settings {
     pub playlist: bool,
     /// Browser to borrow YouTube cookies from (`--cookies-from-browser`), "" = off.
     pub cookies_browser: String,
+    /// Proxy URL for yt-dlp; "" = use the system proxy, if any.
+    pub proxy: String,
     /// Unix seconds of the last successful `yt-dlp -U`.
     pub last_engine_update: u64,
 }
@@ -31,6 +33,7 @@ impl Default for Settings {
             max_parallel: 2,
             playlist: false,
             cookies_browser: String::new(),
+            proxy: String::new(),
             last_engine_update: 0,
         }
     }
@@ -50,6 +53,10 @@ impl Settings {
         self.max_parallel = self.max_parallel.clamp(1, 5);
         if !COOKIE_BROWSERS.contains(&self.cookies_browser.as_str()) {
             self.cookies_browser.clear();
+        }
+        self.proxy = self.proxy.trim().to_string();
+        if !self.proxy.is_empty() && !crate::system::is_valid_proxy(&self.proxy) {
+            self.proxy.clear();
         }
     }
 }

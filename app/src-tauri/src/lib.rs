@@ -3,6 +3,7 @@ mod downloader;
 mod engine;
 mod proc;
 mod settings;
+mod system;
 
 use deeplink::{LinkRequest, PendingLinks};
 use downloader::{DownloadRequest, Downloader};
@@ -70,6 +71,16 @@ fn start_download(
 #[tauri::command]
 fn cancel_download(id: u64, downloader: State<Downloader>) {
     downloader.cancel(id);
+}
+
+#[tauri::command]
+fn detect_browsers() -> Vec<&'static str> {
+    system::detect_browsers()
+}
+
+#[tauri::command]
+async fn system_proxy() -> Option<String> {
+    system::system_proxy()
 }
 
 #[tauri::command]
@@ -155,6 +166,8 @@ pub fn run() {
             start_download,
             cancel_download,
             take_pending_links,
+            detect_browsers,
+            system_proxy,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
