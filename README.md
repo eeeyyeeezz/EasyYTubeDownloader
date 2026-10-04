@@ -123,9 +123,18 @@ To download a whole playlist, paste a playlist link and tick **Download the whol
 <details>
 <summary><b>"YouTube asked to confirm you're not a bot" / age-restricted videos</b></summary>
 
-Open **Settings → Use cookies from browser** and choose a browser where you're signed in to YouTube. The app passes these cookies to yt-dlp only to talk to YouTube, and they never leave your computer. On macOS, Chrome-based browsers ask for Keychain access once, and Safari needs Full Disk Access for the app.
+YouTube blocks requests from many IP addresses (some countries, mobile carriers, VPNs and shared networks) until you sign in. To fix it in one click:
 
-This check is also more common on VPNs and shared networks.
+1. Make sure you're signed in to YouTube in one of your browsers.
+2. In the failed download, pick that browser and press **Retry signed in**.
+
+The app reads that browser's YouTube cookies on your computer and passes them to yt-dlp. They never go anywhere except YouTube. The choice is saved, so later downloads just work. You can change it under **Settings → Use cookies from browser**.
+
+- **Firefox** works best everywhere: no extra prompts.
+- **macOS:** Chrome-based browsers ask for Keychain access once (press *Always Allow*). Safari needs Full Disk Access for the app.
+- **Windows:** Chrome, Edge and Brave encrypt their cookies so they can't be read. Use **Firefox**.
+
+**Another option is a VPN or proxy.** If YouTube only opens in your browser through a proxy app, the downloader needs it too. The app picks up the system proxy automatically, and you can enter one under **Settings → Proxy**, for example `socks5://127.0.0.1:1080`.
 </details>
 
 <details>
