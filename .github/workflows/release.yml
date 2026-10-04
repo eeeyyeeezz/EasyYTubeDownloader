@@ -15,16 +15,21 @@ jobs:
     outputs:
       release_id: ${{ steps.create.outputs.id }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: create
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
+        # Create the draft through the API: it returns the id directly. A freshly
+        # created draft is "untagged" for a while, so looking it up by tag fails.
         run: |
-          gh release create "$TAG" --draft --verify-tag \
-            --title "EasyYTubeDownloader $TAG" \
-            --notes-file .github/release-notes.md
-          id=$(gh api "repos/$GITHUB_REPOSITORY/releases" --jq ".[] | select(.tag_name == \"$TAG\") | .id" | head -n1)
+          id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+            -f tag_name="$TAG" \
+            -f name="EasyYTubeDownloader $TAG" \
+            -F body=@.github/release-notes.md \
+            -F draft=true \
+            --jq .id)
+          test -n "$id"
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
   app:
@@ -52,13 +57,13 @@ jobs:
             rust_targets: ""
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -88,8 +93,8 @@ jobs:
       AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
       AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -102,7 +107,7 @@ jobs:
       - name: Upload to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${{ github.ref_name }}" extension/artifacts/*.zip --clobber
+        run: gh release upload "${{ github.ref_name }}" extension/artifacts/*.zip --clobber --repo "$GITHUB_REPOSITORY"
       # Optional: submit the new version to addons.mozilla.org. The very first
       # submission has to be made by hand on AMO; after that, add the
       # AMO_JWT_ISSUER and AMO_JWT_SECRET repository secrets to enable this.
