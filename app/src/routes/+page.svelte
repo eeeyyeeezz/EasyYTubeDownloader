@@ -20,6 +20,7 @@
   import FirstRun from "$lib/FirstRun.svelte";
   import JobItem from "$lib/JobItem.svelte";
   import SettingsPanel from "$lib/SettingsPanel.svelte";
+  import UpdateBanner from "$lib/UpdateBanner.svelte";
 
   let settings = $state<Settings | null>(null);
   let engine = $state<{ ready: boolean; missing: string[]; force: boolean } | null>(null);
@@ -167,6 +168,8 @@
           </svg>
         </button>
       </header>
+
+      <UpdateBanner />
 
       <h1>{t("tagline")}</h1>
 

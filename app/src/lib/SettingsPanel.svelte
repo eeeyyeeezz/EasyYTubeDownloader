@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { openUrl } from "@tauri-apps/plugin-opener";
+  import { getVersion } from "@tauri-apps/api/app";
   import {
     api,
     COOKIE_BROWSERS,
@@ -30,6 +31,7 @@
   let updating = $state(false);
   let updateMessage = $state<string | null>(null);
   let systemProxy = $state<string | null>(null);
+  let appVersion = $state("");
   // svelte-ignore state_referenced_locally
   let proxy = $state(settings.proxy ?? "");
   const proxyInvalid = $derived(proxy.trim() !== "" && !isValidProxy(proxy));
@@ -42,6 +44,7 @@
   onMount(async () => {
     version = await api.engineVersion().catch(() => null);
     systemProxy = await api.systemProxy().catch(() => null);
+    appVersion = await getVersion().catch(() => "");
   });
 
   function saveProxy() {
@@ -174,6 +177,7 @@
 
   <footer>
     <button class="link" onclick={() => openUrl(REPO_URL)}>{t("settings.about")}</button>
+    {#if appVersion}<span class="version">{t("settings.appVersion", { v: appVersion })}</span>{/if}
   </footer>
 </div>
 
@@ -285,5 +289,13 @@
 
   footer {
     margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .version {
+    font-size: 12px;
+    color: var(--muted);
   }
 </style>

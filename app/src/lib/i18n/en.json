@@ -82,7 +82,8 @@
     "proxySystem": "Using the system proxy {proxy}. Enter another address to override it.",
     "proxyNone": "No system proxy found. If YouTube only opens through a VPN or proxy app, enter its address, e.g. socks5://127.0.0.1:1080.",
     "proxyCustom": "Downloads go through this proxy.",
-    "proxyInvalid": "Use a full address like http://host:port or socks5://host:port."
+    "proxyInvalid": "Use a full address like http://host:port or socks5://host:port.",
+    "appVersion": "Version {v}"
   },
   "firstRun": {
     "title": "Setting things up",
@@ -104,5 +105,11 @@
   },
   "retryWithCookies": "Retry with my browser's account",
   "cookiesFrom": "Browser to take cookies from",
-  "noBrowsers": "No supported browser found. Sign in to YouTube in Chrome or Firefox, or turn on a VPN."
+  "noBrowsers": "No supported browser found. Sign in to YouTube in Chrome or Firefox, or turn on a VPN.",
+  "update": {
+    "available": "Version {version} is available.",
+    "install": "Update",
+    "installing": "Updating… {percent}%",
+    "failed": "The update didn't install."
+  }
 }

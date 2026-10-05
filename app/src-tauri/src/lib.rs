@@ -121,6 +121,9 @@ pub fn run() {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
             deeplink::focus_main(app);
         }));
+        builder = builder
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_process::init());
     }
 
     builder

@@ -31,6 +31,15 @@
           "easyytd"
         ]
       }
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE1QUQxOThENjI3OEQyREEKUldUYTBuaGlqUm10cFNXVDQ1MUgza1NMR0JlRFNsdlRKSmV1cFYrekM3WDNmNHBGVUMvUk9MUDkK",
+      "endpoints": [
+        "https://github.com/eeeyyeeezz/EasyYTubeDownloader/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     }
   },
   "bundle": {
@@ -62,6 +71,7 @@
         ],
         "displayLanguageSelector": false
       }
-    }
+    },
+    "createUpdaterArtifacts": false
   }
 }

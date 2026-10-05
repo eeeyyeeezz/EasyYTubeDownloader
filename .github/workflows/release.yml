@@ -80,10 +80,16 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signs the update bundles; tauri-action then uploads latest.json,
+          # which installed apps poll to update themselves.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: app
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          args: ${{ matrix.args }}
+          # Update bundles are only built here, where the signing key exists,
+          # so building from source works without it.
+          args: ${{ matrix.args }} --config src-tauri/tauri.release.conf.json
 
   extension:
     needs: create-release

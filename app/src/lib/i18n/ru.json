@@ -82,7 +82,8 @@
     "proxySystem": "Используется системный прокси {proxy}. Чтобы указать другой, введите адрес.",
     "proxyNone": "Системный прокси не найден. Если YouTube открывается только через VPN или прокси-приложение, введите его адрес, например socks5://127.0.0.1:1080.",
     "proxyCustom": "Загрузки идут через этот прокси.",
-    "proxyInvalid": "Нужен полный адрес вида http://host:port или socks5://host:port."
+    "proxyInvalid": "Нужен полный адрес вида http://host:port или socks5://host:port.",
+    "appVersion": "Версия {v}"
   },
   "firstRun": {
     "title": "Подготовка",
@@ -104,5 +105,11 @@
   },
   "retryWithCookies": "Повторить с аккаунтом из браузера",
   "cookiesFrom": "Браузер, из которого взять cookies",
-  "noBrowsers": "Подходящий браузер не найден. Войдите в YouTube в Chrome или Firefox либо включите VPN."
+  "noBrowsers": "Подходящий браузер не найден. Войдите в YouTube в Chrome или Firefox либо включите VPN.",
+  "update": {
+    "available": "Доступна версия {version}.",
+    "install": "Обновить",
+    "installing": "Обновление… {percent}%",
+    "failed": "Не удалось установить обновление."
+  }
 }

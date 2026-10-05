@@ -25,7 +25,7 @@
 - **Formats that just work**: best quality (up to 4K/8K), 1080p or 720p MP4 that plays everywhere, MP3 with cover art, or M4A.
 - **Browser extension** for Chrome, Edge, Brave and Firefox adds a **⬇ Download** button under every YouTube video.
 - **Playlists**, a download queue, progress, speed and time left.
-- **Stays working**: the download engine ([yt-dlp](https://github.com/yt-dlp/yt-dlp)) updates itself daily, so YouTube changes don't break the app.
+- **Stays working**: the download engine ([yt-dlp](https://github.com/yt-dlp/yt-dlp)) updates itself daily, so YouTube changes don't break the app. The app itself offers new versions in one click (from 0.1.2 on).
 - **Small and private**: the installer is about 3–10 MB and there is no tracking. The app only talks to YouTube, and to GitHub to download and update its tools.
 - English and Russian interface, light and dark theme.
 
