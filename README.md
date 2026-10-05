@@ -145,6 +145,12 @@ YouTube changes things from time to time. Open **Settings → Download engine �
 </details>
 
 <details>
+<summary><b>Windows Defender or another antivirus flags a file</b></summary>
+
+The download engine `yt-dlp.exe` is a Python program packed into one file. Antivirus heuristics sometimes mistake that packing for malware ([yt-dlp#7532](https://github.com/yt-dlp/yt-dlp/issues/7532)). The app downloads it only from yt-dlp's official GitHub releases and checks its SHA-256 checksum. If your antivirus quarantines it, restore it and add the engine folder (see below) to the exclusions, then press **Settings → Download engine → Reinstall**.
+</details>
+
+<details>
 <summary><b>Clicking the extension button does nothing</b></summary>
 
 - Make sure the app is installed and was opened at least once.
