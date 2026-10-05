@@ -131,6 +131,7 @@ YouTube blocks requests from many IP addresses (some countries, mobile carriers,
 The app reads that browser's YouTube cookies on your computer and passes them to yt-dlp. They never go anywhere except YouTube. The choice is saved, so later downloads just work. You can change it under **Settings → Use cookies from browser**.
 
 - **Firefox** works best everywhere: no extra prompts.
+- **Your account:** yt-dlp's authors warn that YouTube may temporarily or permanently restrict accounts used with downloaders. For occasional downloads this is unlikely; for heavy use, sign in with a spare account.
 - **macOS:** Chrome-based browsers ask for Keychain access once (press *Always Allow*). Safari needs Full Disk Access for the app.
 - **Windows:** Chrome, Edge and Brave encrypt their cookies so they can't be read. Use **Firefox**.
 
@@ -157,7 +158,7 @@ YouTube changes things from time to time. Open **Settings → Download engine �
 | OS | Folder |
 |---|---|
 | macOS | `~/Library/Application Support/io.github.eeeyyeeezz.easyytd/engine` |
-| Windows | `%APPDATA%\io.github.eeeyyeeezz.easyytd\engine` |
+| Windows | `%LOCALAPPDATA%\io.github.eeeyyeeezz.easyytd\engine` |
 | Linux | `~/.local/share/io.github.eeeyyeeezz.easyytd/engine` |
 
 You can delete this folder at any time. The app downloads the tools again on the next launch.

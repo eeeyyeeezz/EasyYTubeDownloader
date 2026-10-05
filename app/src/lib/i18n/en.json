@@ -77,7 +77,7 @@
     "about": "Open source on GitHub",
     "cookies": "Use cookies from browser",
     "cookiesOff": "Off",
-    "cookiesHint": "Used when YouTube asks to sign in or confirm you're not a bot. Pick a browser where you're signed in to YouTube. Cookies never leave your computer.",
+    "cookiesHint": "Used when YouTube asks to sign in or confirm you're not a bot. Pick a browser where you're signed in to YouTube. Cookies never leave your computer. YouTube may restrict accounts used with downloaders, so for heavy use a spare account is safer.",
     "proxy": "Proxy",
     "proxySystem": "Using the system proxy {proxy}. Enter another address to override it.",
     "proxyNone": "No system proxy found. If YouTube only opens through a VPN or proxy app, enter its address, e.g. socks5://127.0.0.1:1080.",

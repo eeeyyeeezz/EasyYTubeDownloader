@@ -197,7 +197,16 @@ impl Job {
         .map(String::from)
         .collect();
 
-        a.push(if self.playlist { "--yes-playlist" } else { "--no-playlist" }.into());
+        if self.playlist {
+            // YouTube rate-limits sessions that fetch many videos quickly
+            // ("This content isn't available, try again later").
+            a.extend(
+                ["--yes-playlist", "--sleep-requests", "0.75", "--sleep-interval", "5", "--max-sleep-interval", "10"]
+                    .map(String::from),
+            );
+        } else {
+            a.push("--no-playlist".into());
+        }
         a.extend(["-P".into(), self.dir.to_string_lossy().into_owned()]);
         a.extend([
             "-o".into(),

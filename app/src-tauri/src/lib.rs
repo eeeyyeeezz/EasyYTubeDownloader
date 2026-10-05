@@ -135,7 +135,17 @@ pub fn run() {
             let limit = store.get().max_parallel;
 
             app.manage(store);
-            app.manage(Engine::new(paths.app_data_dir()?.join("engine")));
+            // Local, not roaming, app data: ~150 MB of tools must not sync with
+            // Windows roaming profiles. Same folder as before on macOS and Linux.
+            let engine_dir = paths.app_local_data_dir()?.join("engine");
+            let old_engine_dir = paths.app_data_dir()?.join("engine");
+            if old_engine_dir != engine_dir && old_engine_dir.is_dir() && !engine_dir.exists() {
+                if let Some(parent) = engine_dir.parent() {
+                    let _ = std::fs::create_dir_all(parent);
+                }
+                let _ = std::fs::rename(&old_engine_dir, &engine_dir);
+            }
+            app.manage(Engine::new(engine_dir));
             app.manage(Downloader::new(limit));
             app.manage(PendingLinks::default());
 
