@@ -126,7 +126,7 @@ To download a whole playlist, paste a playlist link and tick **Download the whol
 YouTube blocks requests from many IP addresses (some countries, mobile carriers, VPNs and shared networks) until you sign in. To fix it in one click:
 
 1. Make sure you're signed in to YouTube in one of your browsers.
-2. In the failed download, pick that browser and press **Retry signed in**.
+2. In the failed download, pick that browser and press **Retry with my browser's account**.
 
 The app reads that browser's YouTube cookies on your computer and passes them to yt-dlp. They never go anywhere except YouTube. The choice is saved, so later downloads just work. You can change it under **Settings → Use cookies from browser**.
 

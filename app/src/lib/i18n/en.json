@@ -102,7 +102,7 @@
       "done": "Ready"
     }
   },
-  "retryWithCookies": "Retry signed in",
+  "retryWithCookies": "Retry with my browser's account",
   "cookiesFrom": "Browser to take cookies from",
   "noBrowsers": "No supported browser found. Sign in to YouTube in Chrome or Firefox, or turn on a VPN."
 }

@@ -102,7 +102,7 @@
       "done": "Готово"
     }
   },
-  "retryWithCookies": "Повторить со входом",
+  "retryWithCookies": "Повторить с аккаунтом из браузера",
   "cookiesFrom": "Браузер, из которого взять cookies",
   "noBrowsers": "Подходящий браузер не найден. Войдите в YouTube в Chrome или Firefox либо включите VPN."
 }
