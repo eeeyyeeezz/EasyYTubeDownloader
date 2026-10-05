@@ -34,6 +34,8 @@ enum Checksum {
     File(String),
     /// Known SHA-256 of a pinned download.
     Pinned(&'static str),
+    /// A file next to the final (post-redirect) download URL, e.g. `<url>.sha256`.
+    Sibling(&'static str),
 }
 
 struct Asset {
@@ -47,7 +49,8 @@ struct Asset {
     binaries: &'static [&'static str],
 }
 
-fn assets(include_ffmpeg: bool) -> Vec<Asset> {
+/// Install steps. Each step lists alternative sources, tried in order.
+fn assets(include_ffmpeg: bool) -> Vec<Vec<Asset>> {
     let ytdlp_base = "https://github.com/yt-dlp/yt-dlp/releases/latest/download";
     let deno_base = "https://github.com/denoland/deno/releases/latest/download";
     let ffmpeg_base = "https://github.com/yt-dlp/FFmpeg-Builds/releases/latest/download";
@@ -75,22 +78,22 @@ fn assets(include_ffmpeg: bool) -> Vec<Asset> {
     let deno_file = format!("deno-{deno_target}.zip");
 
     let mut list = vec![
-        Asset {
+        vec![Asset {
             component: "yt-dlp",
             url: format!("{ytdlp_base}/{ytdlp_file}"),
             checksum: Checksum::File(format!("{ytdlp_base}/SHA2-256SUMS")),
             sums_name: ytdlp_file.into(),
             unpack: Unpack::Raw,
             binaries: &["yt-dlp"],
-        },
-        Asset {
+        }],
+        vec![Asset {
             component: "deno",
             url: format!("{deno_base}/{deno_file}"),
             checksum: Checksum::File(format!("{deno_base}/{deno_file}.sha256sum")),
             sums_name: deno_file.clone(),
             unpack: Unpack::Zip,
             binaries: &["deno"],
-        },
+        }],
     ];
 
     if include_ffmpeg {
@@ -108,15 +111,30 @@ fn assets(include_ffmpeg: bool) -> Vec<Asset> {
                     ("ffprobe-darwin-x64.gz", &["ffprobe"], "d4da574d6e2e197bd259b47d69cf262df9e312af24ad960444f6d806d3d4c186"),
                 ]
             };
+            let riedl_arch = if arm { "arm64" } else { "amd64" };
             for (file, binaries, sha) in builds {
-                list.push(Asset {
-                    component: "ffmpeg",
-                    url: format!("{base}/{file}"),
-                    checksum: Checksum::Pinned(sha),
-                    sums_name: file.into(),
-                    unpack: Unpack::Gz,
-                    binaries,
-                });
+                let name = binaries[0];
+                list.push(vec![
+                    Asset {
+                        component: "ffmpeg",
+                        url: format!("{base}/{file}"),
+                        checksum: Checksum::Pinned(sha),
+                        sums_name: file.into(),
+                        unpack: Unpack::Gz,
+                        binaries,
+                    },
+                    // Fallback if the pinned GitHub build ever disappears (slow mirror).
+                    Asset {
+                        component: "ffmpeg",
+                        url: format!(
+                            "https://ffmpeg.martin-riedl.de/redirect/latest/macos/{riedl_arch}/release/{name}.zip"
+                        ),
+                        checksum: Checksum::Sibling(".sha256"),
+                        sums_name: format!("{name}.zip"),
+                        unpack: Unpack::Zip,
+                        binaries,
+                    },
+                ]);
             }
         } else {
             let (file, unpack) = if cfg!(windows) {
@@ -126,14 +144,14 @@ fn assets(include_ffmpeg: bool) -> Vec<Asset> {
             } else {
                 ("ffmpeg-master-latest-linux64-gpl.tar.xz", Unpack::TarXz)
             };
-            list.push(Asset {
+            list.push(vec![Asset {
                 component: "ffmpeg",
                 url: format!("{ffmpeg_base}/{file}"),
                 checksum: Checksum::File(format!("{ffmpeg_base}/checksums.sha256")),
                 sums_name: file.into(),
                 unpack,
                 binaries: &["ffmpeg", "ffprobe"],
-            });
+            }]);
         }
     }
     list
@@ -229,13 +247,21 @@ impl Engine {
         let client = http_client()?;
         let include_ffmpeg = force || status.missing.iter().any(|m| m == "ffmpeg");
 
-        for asset in assets(include_ffmpeg) {
-            if !force && !status.missing.iter().any(|m| m == asset.component) {
+        for sources in assets(include_ffmpeg) {
+            let component = sources[0].component;
+            if !force && !status.missing.iter().any(|m| m == component) {
                 continue;
             }
-            self.install_asset(app, &client, &asset)
-                .await
-                .map_err(|e| format!("{}: {e}", asset.component))?;
+            let mut errors = Vec::new();
+            for asset in &sources {
+                match self.install_asset(app, &client, asset).await {
+                    Ok(()) => break,
+                    Err(e) => errors.push(e),
+                }
+            }
+            if errors.len() == sources.len() {
+                return Err(format!("{component}: {}", errors.join("; ")));
+            }
         }
         Ok(())
     }
@@ -247,8 +273,8 @@ impl Engine {
         asset: &Asset,
     ) -> Result<(), String> {
         let tmp = self.dir.join(format!(".{}.download", asset.sums_name));
-        let hash = match download(app, client, asset.component, &asset.url, &tmp).await {
-            Ok(hash) => hash,
+        let (hash, final_url) = match download(app, client, asset.component, &asset.url, &tmp).await {
+            Ok(done) => done,
             Err(e) => {
                 let _ = fs::remove_file(&tmp);
                 return Err(e);
@@ -258,9 +284,14 @@ impl Engine {
         emit(app, asset.component, "verify", 0, None);
         let expected = match &asset.checksum {
             Checksum::Pinned(sha) => sha.to_string(),
-            Checksum::File(url) => {
+            Checksum::File(_) | Checksum::Sibling(_) => {
+                let url = match &asset.checksum {
+                    Checksum::File(url) => url.clone(),
+                    Checksum::Sibling(suffix) => format!("{final_url}{suffix}"),
+                    Checksum::Pinned(_) => unreachable!(),
+                };
                 let sums = client
-                    .get(url)
+                    .get(&url)
                     .send()
                     .await
                     .and_then(|r| r.error_for_status())
@@ -310,6 +341,21 @@ impl Engine {
         }
     }
 
+    /// Runs `deno upgrade`, so the JS runtime keeps up with what yt-dlp needs.
+    pub async fn update_deno(&self) -> Result<(), String> {
+        let _guard = self.lock.write().await;
+        let output = crate::proc::command(&self.deno())
+            .args(["upgrade", "--quiet"])
+            .output()
+            .await
+            .map_err(|e| e.to_string())?;
+        if output.status.success() {
+            Ok(())
+        } else {
+            Err(String::from_utf8_lossy(&output.stderr).trim().to_string())
+        }
+    }
+
     pub async fn ytdlp_version(&self) -> Option<String> {
         let output = crate::proc::command(&self.ytdlp())
             .arg("--version")
@@ -353,20 +399,21 @@ fn emit(app: &AppHandle, component: &str, phase: &str, downloaded: u64, total: O
     );
 }
 
-/// Streams `url` into `dest`, returning its SHA-256.
+/// Streams `url` into `dest`, returning its SHA-256 and the URL after redirects.
 async fn download(
     app: &AppHandle,
     client: &reqwest::Client,
     component: &str,
     url: &str,
     dest: &Path,
-) -> Result<String, String> {
+) -> Result<(String, String), String> {
     let resp = client
         .get(url)
         .send()
         .await
         .and_then(|r| r.error_for_status())
         .map_err(|e| e.to_string())?;
+    let final_url = resp.url().to_string();
     let total = resp.content_length();
     let mut file = tokio::fs::File::create(dest)
         .await
@@ -389,7 +436,7 @@ async fn download(
     }
     file.flush().await.map_err(|e| e.to_string())?;
     emit(app, component, "download", downloaded, total);
-    Ok(hex::encode(hasher.finalize()))
+    Ok((hex::encode(hasher.finalize()), final_url))
 }
 
 /// Finds the SHA-256 for `name` in a checksum file. Handles both

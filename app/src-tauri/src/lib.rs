@@ -47,7 +47,10 @@ async fn engine_install(app: AppHandle, force: bool) -> Result<EngineStatus, Str
 
 #[tauri::command]
 async fn engine_update(app: AppHandle) -> Result<String, String> {
-    let out = app.state::<Engine>().update_ytdlp().await?;
+    let engine = app.state::<Engine>();
+    let out = engine.update_ytdlp().await?;
+    // Deno failing to update is not worth an error: the current one still works.
+    let _ = engine.update_deno().await;
     let _ = app
         .state::<SettingsStore>()
         .update(|s| s.last_engine_update = now());
@@ -103,6 +106,7 @@ async fn daily_update(app: AppHandle) {
         return;
     }
     if engine.update_ytdlp().await.is_ok() {
+        let _ = engine.update_deno().await;
         let _ = store.update(|s| s.last_engine_update = now());
     }
 }
